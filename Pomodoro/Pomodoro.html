@@ -17,67 +17,90 @@
     <script>
         var canvas = document.getElementById('pomodoro_clock');
         var context = canvas.getContext('2d');
-
         var clockImage = new Image();
         var clockImageLoaded = false;
+        var seconds = 0;
+
         clockImage.onload = function () {
             clockImageLoaded = true;
         }
-        //clockImage.src = 'minutes.gif';
-        clockImage.src = 'https://s20.postimg.org/5npn9i1h9/minutes.gif';
+        clockImage.src = 'minutes.gif';
+
 
         function addBackgroundImage() {
             context.drawImage(clockImage, canvas.width / 2 * -1, canvas.height / 2 * -1, canvas.width, canvas.height);
-
-
         }
 
-        function drawMinuteHand(theDate) {
-          var minutes = theDate.getMinutes();
-          context.save();
-          context.strokeStyle = "#0000A0";
-          context.fillStyle = "#0000A0";
-          context.rotate( (Math.PI/30)*minutes)
-          context.lineWidth = 10;
-          context.beginPath();
-          context.moveTo(-28,0);
-          context.lineTo(112,0);
-          context.stroke();
-          context.restore();
+        function degreesToRadians(degrees) {
+            return (Math.PI / 180) * degrees
         }
 
-        function drawSecondHand(theDate) {
-            var seconds = theDate.getSeconds();
+        function drawMinuteHand(minutes) {
             context.save();
-              context.rotate(seconds * Math.PI/30);
-              context.strokeStyle = "#D40000";
-              context.fillStyle = "#D40000";
-              context.lineWidth = 6;
-              context.beginPath();
-              context.moveTo(-30,0);
-              context.lineTo(117,0);
-              context.stroke();
-              context.beginPath();
-              context.arc(0,0,10,0,Math.PI*2,true);
-              context.fill();
-              context.beginPath();
-              context.arc(125,0,10,0,Math.PI*2,true);
-              context.stroke();
-              context.fillStyle = "rgba(0,0,0,0)";
-              context.arc(0,0,3,0,Math.PI*2,true);
-              context.fill();
-              context.restore();
+            context.fillStyle = '#000';
+            context.strokeStyle = '#555';
+            context.rotate(degreesToRadians(minutes * 6));
+
+            context.beginPath();
+            context.moveTo(0, 0); // center
+            context.lineTo(8 * -1, -10);
+            context.lineTo(0, 100 * -1);
+            context.lineTo(8, -10);
+            context.lineTo(0, 0);
+            context.fill();
+            context.stroke();
+
+            context.restore();
+        }
+
+        function drawSecondHand(seconds) {
+            seconds -= 15;
+            console.log(seconds);
+            context.save();
+            context.fillStyle = 'red';
+            context.globalAlpha = 1;
+            context.rotate(degreesToRadians(seconds * 6));
+
+            context.save();
+
+            context.strokeStyle = "#D40000";
+            context.fillStyle = "#D40000";
+            context.lineWidth = 6;
+            context.beginPath();
+            context.moveTo(-30, 0);
+            context.lineTo(107, 0);
+            context.stroke();
+            context.beginPath();
+            context.arc(0, 0, 10, 0, Math.PI * 2, true);
+            context.fill();
+            context.beginPath();
+            context.arc(115, 0, 10, 0, Math.PI * 2, true);
+            context.stroke();
+            context.fillStyle = "rgba(0,0,0,0)";
+            context.arc(0, 0, 3, 0, Math.PI * 2, true);
+            context.fill();
+            context.restore();
+            context.restore();
         }
 
         function writeBrandName() {
-
+            context.font = "25pt Geneva";
+            var brandName = 'Pomodoro';
+            var brandNameSize = context.measureText(brandName);
+            context.strokeText("Pomodoro", 0 - brandNameSize.width / 2, -40);
         }
 
-        function createClock(theDate) {
+        function createClock() {
+
             addBackgroundImage();
-            var theDate = new Date();
-            drawMinuteHand(theDate);
-            drawSecondHand(theDate);
+            writeBrandName();
+
+            seconds++;
+            drawMinuteHand(Math.floor(seconds / 60));
+            drawSecondHand(seconds);
+          
+            
+
         }
 
         function clockApp() {
@@ -87,8 +110,11 @@
             }
             context.translate(canvas.width / 2, canvas.height / 2);
             createClock();
+            setInterval('createClock()', 1000)
         }
-        clockApp(); // Start the application
+
+        clockApp();
+
     </script>
 </body>
 </html>
